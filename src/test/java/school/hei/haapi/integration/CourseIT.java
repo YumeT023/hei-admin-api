@@ -17,6 +17,7 @@ import school.hei.haapi.endpoint.rest.security.cognito.CognitoComponent;
 import school.hei.haapi.integration.conf.AbstractContextInitializer;
 import school.hei.haapi.integration.conf.TestUtils;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static school.hei.haapi.integration.TeacherIT.teacher1;
@@ -131,6 +132,37 @@ class CourseIT {
 
     assertTrue(actual.contains(course1()));
     assertTrue(actual.contains(course2()));
+    assertTrue(actual.contains(course3()));
+  }
+
+  @Test
+  void read_and_filter_by_teacher_ok() throws ApiException {
+    ApiClient teacher1Client = anApiClient(TEACHER1_TOKEN);
+    TeachingApi api = new TeachingApi(teacher1Client);
+
+    List<Course> byFirstName = api.getCourses(1, 25, null, null, null, "T", null);
+    List<Course> byLastName = api.getCourses(1, 25, null, null, null, null, "teach");
+
+    // teacher2_id and teacher3_id has 'T' on their first_name
+    assertFalse(byFirstName.contains(course1()));
+    assertTrue(byFirstName.contains(course2()));
+    assertTrue(byFirstName.contains(course3()));
+
+    // all teacher's last_name contains `teach`
+    assertTrue(byLastName.contains(course1()));
+    assertTrue(byLastName.contains(course2()));
+    assertTrue(byLastName.contains(course3()));
+  }
+
+  @Test
+  void read_and_filter_by_its_metadata_ok() throws ApiException {
+    ApiClient teacher1Client = anApiClient(TEACHER1_TOKEN);
+    TeachingApi api = new TeachingApi(teacher1Client);
+
+    List<Course> actual = api.getCourses(1, 25, "PROG", null, 6, null, null);
+
+    assertTrue(actual.contains(course1()));
+    assertFalse(actual.contains(course2()));
     assertTrue(actual.contains(course3()));
   }
 

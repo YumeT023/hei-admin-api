@@ -19,9 +19,21 @@ public class CourseController {
   private final CourseMapper mapper;
 
   @GetMapping("/courses")
-  public List<Course> getCourses(@RequestParam PageFromOne page,
-                                 @RequestParam("page_size") BoundedPageSize pageSize) {
-    return service.getAll(page, pageSize).stream()
+  public List<Course> getCourses(
+      @RequestParam(value = "code", required = false, defaultValue = "")
+      String code,
+      @RequestParam(value = "name", required = false, defaultValue = "")
+      String name,
+      @RequestParam(value = "teacher_first_name", required = false, defaultValue = "")
+      String teacherFirstName,
+      @RequestParam(value = "teacher_last_name", required = false, defaultValue = "")
+      String teacherLastName,
+      @RequestParam(value = "credits", required = false) Integer credits,
+      @RequestParam PageFromOne page,
+      @RequestParam("page_size") BoundedPageSize pageSize
+  ) {
+    return service.getAll(page, pageSize, code, name, credits, teacherFirstName, teacherLastName)
+        .stream()
         .map(mapper::toRest)
         .collect(Collectors.toUnmodifiableList());
   }

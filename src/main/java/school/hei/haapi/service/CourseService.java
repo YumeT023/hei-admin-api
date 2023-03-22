@@ -18,11 +18,13 @@ import static org.springframework.data.domain.Sort.Direction.ASC;
 public class CourseService {
   private final CourseRepository repository;
 
-  public List<Course> getAll(PageFromOne page, BoundedPageSize pageSize) {
+  public List<Course> getAll(PageFromOne page, BoundedPageSize pageSize, String code, String name,
+                             Integer credits, String teacherFirstName, String teacherLastName) {
     Pageable pageable = PageRequest.of(
         page.getValue() - 1,
         pageSize.getValue(),
         Sort.by(ASC, "name"));
-    return repository.findAllByCriteria(pageable);
+    return repository.findAllByCriteria(code, name, credits, teacherFirstName, teacherLastName,
+        pageable);
   }
 }
