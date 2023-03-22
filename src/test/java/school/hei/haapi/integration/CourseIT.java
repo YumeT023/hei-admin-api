@@ -17,9 +17,11 @@ import school.hei.haapi.endpoint.rest.security.cognito.CognitoComponent;
 import school.hei.haapi.integration.conf.AbstractContextInitializer;
 import school.hei.haapi.integration.conf.TestUtils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static school.hei.haapi.endpoint.rest.model.SortDirection.ASC;
 import static school.hei.haapi.integration.TeacherIT.teacher1;
 import static school.hei.haapi.integration.TeacherIT.teacher2;
 import static school.hei.haapi.integration.TeacherIT.teacher3;
@@ -83,7 +85,7 @@ class CourseIT {
 
   static List<Course> getCoursesWithNoCriteria(TeachingApi api)
       throws ApiException {
-    return api.getCourses(1, 25, null, null, null, null, null);
+    return api.getCourses(1, 25, null, null, null, null, null, null, null);
   }
 
   @BeforeEach
@@ -140,8 +142,8 @@ class CourseIT {
     ApiClient teacher1Client = anApiClient(TEACHER1_TOKEN);
     TeachingApi api = new TeachingApi(teacher1Client);
 
-    List<Course> byFirstName = api.getCourses(1, 25, null, null, null, "T", null);
-    List<Course> byLastName = api.getCourses(1, 25, null, null, null, null, "teach");
+    List<Course> byFirstName = api.getCourses(1, 25, null, null, null, "T", null, null, null);
+    List<Course> byLastName = api.getCourses(1, 25, null, null, null, null, "teach", null, null);
 
     // teacher2_id and teacher3_id has 'T' on their first_name
     assertFalse(byFirstName.contains(course1()));
@@ -159,11 +161,24 @@ class CourseIT {
     ApiClient teacher1Client = anApiClient(TEACHER1_TOKEN);
     TeachingApi api = new TeachingApi(teacher1Client);
 
-    List<Course> actual = api.getCourses(1, 25, "PROG", null, 6, null, null);
+    List<Course> actual = api.getCourses(1, 25, "PROG", null, 6, null, null, null, null);
 
     assertTrue(actual.contains(course1()));
     assertFalse(actual.contains(course2()));
     assertTrue(actual.contains(course3()));
+  }
+
+  @Test
+  void read_and_sort_by_order_field_ok() throws ApiException {
+    ApiClient teacher1Client = anApiClient(TEACHER1_TOKEN);
+    TeachingApi api = new TeachingApi(teacher1Client);
+
+    List<Course> actual =
+        api.getCourses(1, 25, null, null, null, null, null, ASC, ASC);
+
+    assertEquals(actual.get(0), course1());
+    assertEquals(actual.get(1), course3());
+    assertEquals(actual.get(2), course2());
   }
 
   static class ContextInitializer extends AbstractContextInitializer {

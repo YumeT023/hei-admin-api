@@ -3,6 +3,7 @@ package school.hei.haapi.endpoint.rest.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,12 @@ public class CourseController {
 
   @GetMapping("/courses")
   public List<Course> getCourses(
+      @RequestParam("page_size") BoundedPageSize pageSize,
+      @RequestParam(value = "page") PageFromOne page,
+      @RequestParam(value = "creditsOrder", required = false, defaultValue = "ASC")
+      Direction creditsOrder,
+      @RequestParam(value = "codeOrder", required = false, defaultValue = "ASC")
+      Direction codeOrder,
       @RequestParam(value = "code", required = false, defaultValue = "")
       String code,
       @RequestParam(value = "name", required = false, defaultValue = "")
@@ -28,11 +35,10 @@ public class CourseController {
       String teacherFirstName,
       @RequestParam(value = "teacher_last_name", required = false, defaultValue = "")
       String teacherLastName,
-      @RequestParam(value = "credits", required = false) Integer credits,
-      @RequestParam PageFromOne page,
-      @RequestParam("page_size") BoundedPageSize pageSize
+      @RequestParam(value = "credits", required = false) Integer credits
   ) {
-    return service.getAll(page, pageSize, code, name, credits, teacherFirstName, teacherLastName)
+    return service.getAll(page, pageSize, code, name, credits, teacherFirstName, teacherLastName,
+            codeOrder, creditsOrder)
         .stream()
         .map(mapper::toRest)
         .collect(Collectors.toUnmodifiableList());
