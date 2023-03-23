@@ -388,6 +388,30 @@ paths:
           description: Set value to 15 by default if null is provided
           schema:
             $ref: '#/components/schemas/PageSize'
+        - name: code
+          in: query
+          description: The exact value of the course code
+          schema:
+            type: string
+        - name: name
+          in: query
+          schema:
+            type: string
+        - name: credits
+          in: query
+          schema:
+            type: integer
+        - name: teacher_first_name
+          in: query
+          description: The first name of the teacher
+          schema:
+            type: string
+        - name: teacher_last_name
+          in: query
+          description: The last name of the teacher
+          schema:
+            type: string
+
       responses:
         '200':
           description: List of all courses
