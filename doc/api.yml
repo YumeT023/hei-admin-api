@@ -388,6 +388,14 @@ paths:
           description: Set value to 15 by default if null is provided
           schema:
             $ref: '#/components/schemas/PageSize'
+        - name: codeOrder
+          in: query
+          schema:
+            $ref: "#/components/schemas/OrderingEnum"
+        - name: creditsOrder
+          in: query
+          schema:
+            $ref: "#/components/schemas/OrderingEnum"
         - name: code
           in: query
           description: The exact value of the course code
@@ -997,6 +1005,12 @@ components:
             - MANAGER
         bearer:
           type: string
+
+    OrderingEnum:
+      type: string
+      enum:
+        - ASC
+        - DESC
     User:
       properties:
         id:
